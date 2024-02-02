@@ -11,7 +11,7 @@ Empezamos realizando un escaneo de puertos con el comando:
 ```
 nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.11.242 -oN puertos
 ```
-![puertos](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/puertos.png)
+![puertos](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/puertos.png)
 
 Los puertos abiertos son:
 - 22
@@ -22,7 +22,7 @@ Una vez que sabemos los puertos, hacemos otro escaneo para ver los servicios que
 ```
 nmap -p22,80 -sCV 10.10.11.242 -oN services
 ```
-![servicios](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/servicios.png)
+![servicios](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/servicios.png)
 
 Tenemos el puerto 22(ssh) y el 80(http). Lo que significa que hay una página web.
 También nos reporta un dominio `http://devvortex.htb`
@@ -36,16 +36,16 @@ Desafortunadamente no encontraos ningún directorio importante por lo que, en ve
 ```
 wfuzz -c --hc 404 --hw 10 -t 200 -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u http://devvortex.htb -H 'Host: FUZZ.devvortex.htb'
 ```
-![subdominios](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/subdominio.png)
+![subdominios](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/subdominio.png)
 
 El subdominio `dev` tiene buena pinta. Parece que es el subdominio de desarrollo de la página web. Si miramos el `wappalyzer`(lo podéis encontrar en [wappalyzer](https://addons.mozilla.org/es/firefox/addon/wappalyzer/)) vemos que está utilizando Joomla.
 Joomla es un **CMS** (Content Management System) que suele ser usado en desarrollo web.
 Si miramos en el archivo **robots.txt** vemos que hay una ruta /administrator, en la cual hay un panel de login.
 
-![robotstxt](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/robotstxt.png)
+![robotstxt](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/robotstxt.png)
 
-![login](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/login.png)
+![login](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/login.png)
 
 Para tratar de enumerar la versión de Joomla vamos a usar la herraamienta **droopescan**.
 
-![droopescan](https://github.com/UpanaH4ck/upanah4ck.github.io/assets/devvortex/)
+![droopescan](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/droopescan.png)
