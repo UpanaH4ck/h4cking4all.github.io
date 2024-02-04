@@ -11,7 +11,7 @@ Empezamos realizando un escaneo de puertos con el comando:
 ```
 nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.11.242 -oN puertos
 ```
-![puertos](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/puertos.png)
+![puertos](/assets/devvortex/puertos.png)
 
 Los puertos abiertos son:
 - 22
@@ -22,7 +22,7 @@ Una vez que sabemos los puertos, hacemos otro escaneo para ver los servicios que
 ```
 nmap -p22,80 -sCV 10.10.11.242 -oN services
 ```
-![servicios](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/servicios.png)
+![servicios](/assets/devvortex/servicios.png)
 
 Tenemos el puerto 22(ssh) y el 80(http). Lo que significa que hay una página web.
 También nos reporta un dominio `http://devvortex.htb`
@@ -36,24 +36,24 @@ Desafortunadamente no encontraos ningún directorio importante por lo que, en ve
 ```
 wfuzz -c --hc 404 --hw 10 -t 200 -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u http://devvortex.htb -H 'Host: FUZZ.devvortex.htb'
 ```
-![subdominios](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/subdominio.png)
+![subdominios](/assets/devvortex/subdominio.png)
 
 El subdominio `dev` tiene buena pinta. Parece que es el subdominio de desarrollo de la página web. Si miramos el `wappalyzer`(lo podéis encontrar en [wappalyzer](https://addons.mozilla.org/es/firefox/addon/wappalyzer/)) vemos que está utilizando Joomla.
 Joomla es un **CMS** (Content Management System) que suele ser usado en desarrollo web.
 Si miramos en el archivo **robots.txt** vemos que hay una ruta /administrator, en la cual hay un panel de login.
 
-![robotstxt](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/robotstxt.png)
+![robotstxt](/assets/devvortex/robotstxt.png)
 
-![login](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/login.png)
+![login](/assets/devvortex/login.png)
 
 Para tratar de enumerar la versión de Joomla vamos a usar la herraamienta **droopescan**.
 
-![droopescan](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/droopescan.png)
+![droopescan](/assets/devvortex/droopescan.png)
 
 La propia herramienta no logra encontrar la versión de joomla pero, nos pasa un archivo que podría contener información importante: **/administrator/manifests/files/joomla.xml**
 En este archivo si que vemos la versión de joomla:
 
-![joomlaxml](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/joomlaxml.png)
+![joomlaxml](/assets/devvortex/joomlaxml.png)
 
 Parece ser que la versión del CMS es la 4.2.6, la cual tiene una vulnerabilidad de Information Disclousure.
 
@@ -61,7 +61,7 @@ Parece ser que la versión del CMS es la 4.2.6, la cual tiene una vulnerabilidad
 Para explotar esta vulnerabilidad vamos a usar [el exploit de Acceis](https://github.com/Acceis/exploit-CVE-2023-23752). 
 Este exploit nos reporta el usuario y contraseña del panel de login que hemos encontrado:
 
-![info](https://github/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/exploit.png)
+![info](/assets/devvortex/exploit.png)
 
 Con estas credenciales accedemos al panel de administración de Joomla.
 Ahora, vamos a obtener **RCE** a la máquina mediante la inyección de código php malicioso en uno de los archivos del template de Joomla:
@@ -69,13 +69,13 @@ Ahora, vamos a obtener **RCE** a la máquina mediante la inyección de código p
 # Joomla RCE modificando template
 Dentro de la interfaz, tenemos que dirigirnos a **System -> Administrator Templates -> Atum Details and Files -> error.php** como se muestra en las siguientes imágenes:
 
-![php1](https://github/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/php1.png)
+![php1](/assets/devvortex/php1.png)
 
-![php2](https://github/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/php2.png)
+![php2](/assets/devvortex/php2.png)
 
-![php3](https://github/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/php3.png)
+![php3](/assets/devvortex/php3.png)
 
-![php4](https://github/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/php4.png)
+![php4](/assets/devvortex/php4.png)
 
 Una vez estemos en el archivo **error.php**, introducimos el siguiente código php:
 
@@ -112,7 +112,7 @@ select * from sd4fg_users;
 ```
 Con esto vemos la contraseña encriptada del usuario logan:
 
-![hash](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/hash.png)
+![hash](/assets/devvortex/hash.png)
 
 Parece que el hash es `bcrypt`, así que vamos a tratar de crackearlo con john mediante fuerza bruta:
 
@@ -137,7 +137,7 @@ En el primer input seleccionamos la primera opción, después la segunda opción
 
 Llegados a este punto, en la terminal de vim escribimos **!/bin/bash**, como se ve en la imagen:
 
-![bin4](https://github.com/UpanaH4ck/upanah4ck.github.io/tree/master/assets/devvortex/bin4.png)
+![bin4](/assets/devvortex/bin4.png)
 
 Ahora simplemente con presionar la tecla **Intro**, ya tenemos una consola como `superusuario`
 
