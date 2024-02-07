@@ -1,6 +1,6 @@
 ---
 title: HackTheBox-Devvortex Easy
-published: true
+published: false
 ---
 Esta es una máquina fácil de la plataforma de HackTheBox, en la cual vamos a obtener **RCE** a través de la explotación de el CMS **Joomla**.
 Crackearemos una contraseña en hash **bcrypt** para escalar privilegios, y ganaremos acceso root gracias a la capacidad de ejecutar el binario **apport-cli** 
